@@ -1,54 +1,77 @@
-<!doctype html>
-<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Holanda Garçom Online • Atendimentos</title>
-<style>
-:root{color-scheme:dark;--bg:#07111f;--panel:#101d30;--line:#263b58;--text:#f4f7fb;--muted:#a9bbd3;--blue:#2563eb;--green:#15803d;--red:#b91c1c}
-*{box-sizing:border-box}body{margin:0;padding:14px;background:linear-gradient(155deg,#07111f,#101d30);color:var(--text);font:16px system-ui}
-main{max-width:1000px;margin:auto}header,.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;margin:12px 0}
-header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}h1{font-size:clamp(22px,5vw,30px);margin:0}h2{font-size:19px;margin:0 0 12px}
-input,select,button{width:100%;padding:12px;border-radius:10px;border:1px solid var(--line);background:#091526;color:var(--text);font:inherit;margin:5px 0;min-height:46px}
-button{background:var(--blue);border:0;font-weight:700;cursor:pointer}button.secondary{background:#334155}button.green{background:var(--green)}button.red{background:var(--red)}
-.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}.muted{color:var(--muted);font-size:14px}.hidden{display:none!important}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{background:#091526;border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center}.stat strong{display:block;font-size:25px}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}.mesa{border:1px solid var(--line);border-left:5px solid #dc2626;border-radius:12px;background:#091526;padding:13px}.mesa.andamento{border-left-color:#3b82f6}.mesa.finalizada{border-left-color:#16a34a}.mesa h3{margin:0 0 8px}.mesa p{margin:5px 0}.actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}.actions button{font-size:14px;padding:9px}
-.notice{padding:10px;border-radius:10px;background:#172a43;margin:8px 0}.filters{display:grid;grid-template-columns:1fr 1fr;gap:8px}.filters input{grid-column:1/-1}
-@media(max-width:480px){body{padding:7px}.panel,header{padding:12px}.stats{grid-template-columns:1fr 1fr 1fr}.stat{padding:8px}.stat strong{font-size:21px}}
-</style></head><body><main>
-<header><h1>🍕 Atendimentos</h1><div class="row" style="min-width:220px"><button class="secondary" onclick="location.href='index.html'">← Dashboard</button><button class="secondary" onclick="logout()">Sair</button></div></header>
-<section id="login" class="panel"><h2>Acesso</h2><input id="email" type="email" placeholder="E-mail"><input id="pass" type="password" placeholder="Senha"><div class="row"><button onclick="login()">Entrar</button><button class="secondary" onclick="signup()">Criar conta</button></div><p id="authmsg" class="muted"></p></section>
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Holanda Garçom Online</title><style>
+:root{--bg:#0b1220;--p:#121c2e;--line:#26364f;--t:#eaf1ff;--m:#9fb0ca}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);font:16px system-ui;padding:16px}.wrap{max-width:900px;margin:auto}.panel{background:var(--p);border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0}h1,h2{margin:8px 0 14px}input,select,button{font:inherit;border-radius:9px;padding:11px;border:1px solid var(--line);background:#0b1424;color:var(--t);width:100%;margin:5px 0}button{background:#2457a6;border:0;font-weight:650}button.secondary{background:#334155}button.danger{background:#991b1b}.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}.hidden{display:none!important}.muted{color:var(--m);font-size:14px}.turn{font-size:24px;font-weight:800;color:#fbbf24}.pill{background:#0b1424;border:1px solid var(--line);padding:8px 12px;border-radius:99px}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px}.mesa{border:2px solid var(--line);border-radius:12px;padding:12px;background:#0b1424}.mesa.aguardando{border-color:#ef4444}.mesa.andamento{border-color:#3b82f6}.mesa.finalizada{border-color:#16a34a}.actions{display:grid;grid-template-columns:1fr 1fr;gap:5px}.actions button{font-size:14px;padding:9px}.wide{grid-column:1/-1}label{display:block;color:var(--m);font-size:14px;margin-top:8px}
+:root{--bg:#07111f;--p:#101d30;--line:#263b58;--t:#f4f7fb;--m:#a9bbd3}
+body{padding:10px;font-size:16px;background:linear-gradient(160deg,#07111f,#0b1728 55%,#101d30)}
+h1{font-size:clamp(22px,5vw,32px);letter-spacing:-.5px}
+.panel{padding:14px;border-radius:16px;box-shadow:0 5px 18px #0002}
+#app>.panel:first-child{position:sticky;top:6px;z-index:5;backdrop-filter:blur(12px);box-shadow:0 8px 25px #0005}
+#statslist{grid-template-columns:repeat(auto-fit,minmax(135px,1fr)}
+#statslist .mesa{text-align:center;padding:14px 8px;background:linear-gradient(145deg,#14243b,#0b1424)}
+#statslist .mesa b{font-size:14px;display:block}
+#statslist .mesa .turn{font-size:30px;margin:6px 0 0;color:#7dd3fc}
+#openlist,#donelist{grid-template-columns:repeat(auto-fit,minmax(270px,1fr))}
+.mesa{border-radius:14px;padding:14px}
+.actions button{min-height:44px;font-size:14px}
+button,input,select{min-height:46px}
+button{cursor:pointer;transition:transform .08s,filter .15s}
+button:active{transform:scale(.98);filter:brightness(1.15)}
+.sectionhead{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.filterbar{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#searchtable{grid-column:1/-1}
+@media(max-width:480px){body{padding:7px}.panel{padding:11px;margin:9px 0}.row{grid-template-columns:1fr 1fr}.actions{gap:6px}.actions button{padding:10px 5px;font-size:13px}.turn{font-size:22px}}
+
+.adminbar{position:fixed;right:12px;top:12px;z-index:30}
+.dotsbtn{width:48px;height:48px;border-radius:50%;font-size:28px;padding:0;background:#203653;box-shadow:0 5px 20px #0005}
+.adminmenu{position:absolute;right:0;top:54px;width:min(340px,calc(100vw - 24px));max-height:80vh;overflow:auto;background:#101d30;border:1px solid #38516f;border-radius:16px;padding:14px;box-shadow:0 18px 50px #0008}
+.adminmenu h2{margin-top:2px}
+
+.navmodules{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:10px 0}
+.navmodules a{display:block;text-align:center;text-decoration:none;color:#eaf1ff;background:#1b2d47;border:1px solid #304866;border-radius:11px;padding:11px 5px;font-size:13px;font-weight:700}
+.navmodules a:active{background:#2457a6}
+@media(max-width:480px){.navmodules{grid-template-columns:repeat(2,1fr)}}
+</style></head><body><div class="wrap"><h1>🍕 Holanda Garçom Online</h1>
+<div id="login" class="panel"><h2>Entrar</h2><label>E-mail</label><input id="email" type="email"><label>Senha</label><input id="pass" type="password"><div class="row"><button onclick="login()">Entrar</button><button class="secondary" onclick="signup()">Criar conta</button></div><p id="authmsg" class="muted"></p></div>
 <div id="app" class="hidden">
-<section class="panel"><div class="row"><div>Conectado como <b id="userlabel"></b><p class="muted" id="rolelabel"></p></div><div class="notice">Próximo no rodízio: <b id="nextwaiter">—</b></div></div>
-<div class="stats"><div class="stat">Abertas<strong id="openct">0</strong></div><div class="stat">Finalizadas<strong id="donect">0</strong></div><div class="stat">Taxas pagas<strong id="paidct">0</strong></div></div></section>
-<section class="panel"><h2>➕ Abrir atendimento</h2><div class="row"><input id="tableno" placeholder="Número da mesa"><button onclick="addTable()">Abrir mesa</button></div><p class="muted">O garçom é atribuído automaticamente conforme a sequência do rodízio.</p><p id="msg" class="muted"></p></section>
-<section class="panel"><h2>📋 Lista de atendimentos</h2><div class="filters"><select id="filter" onchange="render()"><option value="all">Todos</option><option value="aguardando">Aguardando</option><option value="andamento">Em andamento</option><option value="finalizada">Finalizados</option></select><select id="taxfilter" onchange="render()"><option value="all">Todas as taxas</option><option value="paid">Taxa paga</option><option value="unpaid">Taxa pendente</option></select><input id="search" placeholder="Pesquisar mesa ou garçom..." oninput="render()"></div><div id="list" class="cards"></div></section>
-</div></main>
+<div class="navmodules">
+<a href="#dash">📊 Dashboard</a><a href="#abrir">➕ Abrir mesa</a><a href="#abertos">🟠 Em aberto</a><a href="#finalizados">🟢 Finalizados</a>
+</div>
+<div class="panel" id="dash"><div class="row"><div><b>Usuário:</b> <span id="userlabel"></span><p id="rolelabel" class="muted"></p></div><button class="secondary" onclick="logout()">Sair</button></div><hr><div class="muted">Próximo garçom</div><div class="turn" id="turn">Defina a sequência</div><p>Abertas: <b id="openct">0</b> | Finalizadas: <b id="donect">0</b> | Taxas pagas: <b id="paidct">0</b></p></div>
+<div class="panel" id="desempenho"><h2>📊 Mesas por garçom — hoje</h2>
+
+<div id="statslist" class="cards"></div>
+<p>Total de atendimentos: <b id="statstotal">0</b></p></div>
+<div class="panel" id="abrir"><h2>➕ Abrir atendimento</h2><label>Número da mesa</label><input id="tableno" placeholder="Ex.: 12"><button onclick="addTable()">Abrir mesa / atendimento</button></div>
+<div class="adminbar hidden" id="adminbar"><button class="dotsbtn" onclick="toggleAdminMenu()" aria-label="Abrir menu administrador">⋮</button><div id="adminmenu" class="adminmenu hidden"><h2>Administração</h2><label>Garçons na ordem do rodízio (separados por vírgula)</label><input id="names" placeholder="Railson, Paula, Herick, Elói"><label>Índice inicial</label><input id="startindex" type="number" min="0" value="0"><button onclick="saveSequence()">Salvar sequência</button><p id="seqmsg" class="muted"></p><hr><label>UID do usuário a autorizar</label><input id="memberuid"><label>E-mail</label><input id="memberemail" type="email"><label>Perfil</label><select id="newrole"><option value="waiter">Garçom</option><option value="manager">Gerente</option><option value="admin">Administrador</option></select><button onclick="addMember()">Autorizar usuário</button><p id="membermsg" class="muted"></p><button class="danger" onclick="closeNight()">Encerrar noite e limpar atendimentos</button></div></div>
+
+<div class="panel"><h2>🔎 Encontrar atendimento</h2><div class="filterbar"><input id="searchtable" placeholder="Buscar mesa ou garçom..." oninput="render()"><select id="filterstatus" onchange="render()"><option value="all">Todas as abertas</option><option value="aguardando">Pedido não feito</option><option value="andamento">Em andamento</option></select></div></div>
+<div class="panel" id="abertos"><h2>🟠 Atendimentos em aberto <span id="openlabel"></span></h2><div id="openlist" class="cards"></div></div><div class="panel" id="finalizados"><h2>🟢 Finalizados <span id="donelabel"></span></h2><div id="donelist" class="cards"></div></div></div></div>
 <script type="module">
-import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {getDatabase,ref,onValue,get,set,update,push,remove} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-const config={apiKey:"AIzaSyCIVBLszTdPSg-FZxT8ynJQRebRrjLl6lc",authDomain:"holanda-garcom.firebaseapp.com",databaseURL:"https://holanda-garcom-default-rtdb.firebaseio.com",projectId:"holanda-garcom",storageBucket:"holanda-garcom.firebasestorage.app",messagingSenderId:"118990362111",appId:"1:118990362111:web:f16bcf4d3214971a1743ca"};
-const app=initializeApp(config),auth=getAuth(app),db=getDatabase(app);
-let me=null,role="",seq=[],idx=0,tables={};
-const $=id=>document.getElementById(id);
-window.login=()=>signInWithEmailAndPassword(auth,$("email").value.trim(),$("pass").value).catch(e=>$("authmsg").textContent=msgError(e));
-window.signup=()=>createUserWithEmailAndPassword(auth,$("email").value.trim(),$("pass").value).then(c=>set(ref(db,"members/"+c.user.uid),{name:c.user.email,role:"waiter"})).catch(e=>$("authmsg").textContent=msgError(e));
-window.logout=()=>signOut(auth);
-function msgError(e){return e.code==="auth/invalid-credential"?"E-mail ou senha inválidos.":e.message}
-onAuthStateChanged(auth,async u=>{me=u;if(!u){ $("login").classList.remove("hidden");$("app").classList.add("hidden");return}
-$("login").classList.add("hidden");$("app").classList.remove("hidden");$("userlabel").textContent=u.email;
-const m=await get(ref(db,"members/"+u.uid));role=m.val()?.role||"waiter";$("rolelabel").textContent="Perfil: "+role;
-onValue(ref(db,"sequence"),s=>{let v=s.val()||{};seq=v.names||[];idx=Number(v.index||0);$("nextwaiter").textContent=seq.length?seq[idx%seq.length]:"Configure o rodízio no Admin";});
-onValue(ref(db,"salon"),s=>{tables=s.val()||{};render();});
-});
-window.addTable=async()=>{const n=$("tableno").value.trim();if(!n){$("msg").textContent="Informe o número da mesa.";return}if(!seq.length){$("msg").textContent="Cadastre a sequência do rodízio no menu Administração.";return}
-const waiter=seq[idx%seq.length];const key=push(ref(db,"salon")).key;
-try{await set(ref(db,"salon/"+key),{n,g:waiter,status:"aguardando",taxPaid:false,createdAt:Date.now(),createdBy:me.uid});await update(ref(db,"sequence"),{index:(idx+1)%seq.length});$("tableno").value="";$("msg").textContent=`Mesa ${n} aberta para ${waiter}.`; }catch(e){$("msg").textContent="Erro ao abrir: "+e.message}};
-window.change=async(id,status)=>update(ref(db,"salon/"+id),{status});
-window.tax=async(id,v)=>update(ref(db,"salon/"+id),{taxPaid:v});
-window.del=async id=>{if(confirm("Excluir este atendimento?"))await remove(ref(db,"salon/"+id))};
-window.render=()=>{const arr=Object.entries(tables);const f=$("filter")?.value||"all",tf=$("taxfilter")?.value||"all",q=($("search")?.value||"").toLowerCase();const shown=arr.filter(([id,t])=>(f==="all"||t.status===f)&&(tf==="all"||(tf==="paid"&&t.taxPaid)||(tf==="unpaid"&&!t.taxPaid))&&(`${t.n} ${t.g}`.toLowerCase().includes(q)));
-$("openct").textContent=arr.filter(([i,t])=>t.status!=="finalizada").length;$("donect").textContent=arr.filter(([i,t])=>t.status==="finalizada").length;$("paidct").textContent=arr.filter(([i,t])=>t.taxPaid).length;
-$("list").innerHTML=shown.length?shown.map(([id,t])=>`<article class="mesa ${t.status||"aguardando"}"><h3>Mesa ${esc(t.n)}</h3><p>Garçom: <b>${esc(t.g||"—")}</b></p><p>Status: <b>${label(t.status)}</b> · Taxa: <b>${t.taxPaid?"Paga":"Pendente"}</b></p><div class="actions"><button onclick="change('${id}','aguardando')">Aguardando</button><button onclick="change('${id}','andamento')">Em andamento</button><button class="green" onclick="change('${id}','finalizada')">Finalizar</button><button class="secondary" onclick="tax('${id}',${!t.taxPaid})">${t.taxPaid?"Desmarcar taxa":"Marcar taxa paga"}</button></div>${role==="admin"?`<button class="red" onclick="del('${id}')">Excluir atendimento</button>`:""}</article>`).join(""):'<p class="muted">Nenhum atendimento encontrado.</p>'};
-function label(s){return ({aguardando:"Aguardando",andamento:"Em andamento",finalizada:"Finalizado"})[s]||"Aguardando"}
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";import{getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signOut}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";import{getDatabase,ref,onValue,set,update,push,remove}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+const cfg={apiKey:"AIzaSyCIVBLszTdPSg-FZxT8ynJQRebRrjLl6lc",authDomain:"holanda-garcom.firebaseapp.com",databaseURL:"https://holanda-garcom-default-rtdb.firebaseio.com",projectId:"holanda-garcom",storageBucket:"holanda-garcom.firebasestorage.app",messagingSenderId:"118990362111",appId:"1:118990362111:web:f16bcf4d3214971a1743ca"};const app=initializeApp(cfg),auth=getAuth(app),db=getDatabase(app);let me=null,role="",memberOk=false,state={},seq=[],turnIndex=0,unsubs=[];const $=id=>document.getElementById(id),msg=t=>$("authmsg").textContent=t;
+window.login=()=>signInWithEmailAndPassword(auth,$("email").value.trim(),$("pass").value).catch(e=>msg("Firebase: "+e.code));window.signup=()=>createUserWithEmailAndPassword(auth,$("email").value.trim(),$("pass").value).then(()=>msg("Conta criada. Peça autorização ao administrador.")).catch(e=>msg("Firebase: "+e.code));window.logout=()=>signOut(auth);
+function stop(){unsubs.forEach(f=>f());unsubs=[]}
+onAuthStateChanged(auth,u=>{stop();me=u;role="";memberOk=false;$("login").classList.toggle("hidden",!!u);$("app").classList.add("hidden");if(!u)return;$("userlabel").textContent=u.email||u.uid;
+unsubs.push(onValue(ref(db,"members/"+u.uid),s=>{let m=s.val();const isOwner=(u.email||"").toLowerCase()==="railsonborges1263@gmail.com";role=String(m?.role||(isOwner?"admin":"")).toLowerCase();memberOk=["admin","manager","waiter"].includes(role);$("rolelabel").textContent=memberOk?"Perfil: "+role:"Sem autorização. UID: "+u.uid;$("adminbar").classList.toggle("hidden",role!=="admin");$("adminmenu").classList.add("hidden");$("app").classList.toggle("hidden",!memberOk);$("login").classList.toggle("hidden",memberOk);if(!memberOk)msg("Conta autenticada, sem perfil. UID: "+u.uid)},e=>msg("Erro perfil: "+e.code)));
+unsubs.push(onValue(ref(db,"salon"),s=>{state=s.val()||{};render()},e=>alert("Erro salon: "+e.code)));unsubs.push(onValue(ref(db,"sequence"),s=>{let v=s.val()||{};seq=Array.isArray(v.names)?v.names:[];turnIndex=Number(v.index)||0;renderTurn()},e=>alert("Erro sequence: "+e.code)))});
+window.toggleAdminMenu=()=>{$("adminmenu").classList.toggle("hidden")};
+function ok(){return !!me&&memberOk}function renderTurn(){$("turn").textContent=seq.length?seq[((turnIndex%seq.length)+seq.length)%seq.length]:"Defina a sequência"}
+window.saveSequence=async()=>{const out=$("seqmsg");try{if(role!=="admin"){out.textContent="❌ Somente administrador.";return}let names=$("names").value.split(",").map(x=>x.trim()).filter(Boolean);if(!names.length){out.textContent="Digite os garçons separados por vírgula.";return}let raw=Number($("startindex").value);let index=Number.isFinite(raw)&&raw>=0?Math.floor(raw)%names.length:0;out.textContent="Salvando sequência...";await set(ref(db,"sequence"),{names,index});seq=names;turnIndex=index;renderTurn();out.textContent="✅ Sequência salva: "+names.join(" → ")}catch(e){out.textContent="❌ Falha ao salvar: "+(e.code||e.message);console.error(e)}};
+window.addMember=async()=>{const out=$("membermsg");try{if(role!=="admin"){out.textContent="❌ Somente administrador.";return}let uid=$("memberuid").value.trim(),email=$("memberemail").value.trim().toLowerCase(),r=$("newrole").value;if(!uid||!email){out.textContent="Informe UID e e-mail.";return}out.textContent="Autorizando...";await set(ref(db,"members/"+uid),{email,role:r});out.textContent="✅ Usuário autorizado como "+r; $("memberuid").value="";$("memberemail").value=""}catch(e){out.textContent="❌ Falha ao autorizar: "+(e.code||e.message);console.error(e)}};
+window.addTable=async()=>{try{if(!ok())return alert("Sem autorização");let n=$("tableno").value.trim();if(!n)return alert("Informe o número da mesa");if(!seq.length)return alert("Admin precisa salvar a sequência");let i=((turnIndex%seq.length)+seq.length)%seq.length,g=seq[i],id=push(ref(db,"salon")).key;await set(ref(db,"salon/"+id),{id,n,g,status:"aguardando",taxPaid:false,createdAt:Date.now(),createdBy:me.email||me.uid});await update(ref(db,"sequence"),{index:(i+1)%seq.length});$("tableno").value=""}catch(e){alert("❌ Não foi possível abrir atendimento: "+(e.code||e.message));console.error(e)}};
+window.change=async(id,status)=>{try{if(!ok())return alert("Sem autorização");await update(ref(db,"salon/"+id),{status,updatedAt:Date.now(),updatedBy:me.email})}catch(e){alert("❌ Erro ao alterar atendimento: "+(e.code||e.message));console.error(e)}};window.toggleTax=async(id,v)=>{try{if(!ok())return alert("Sem autorização");await update(ref(db,"salon/"+id),{taxPaid:!v,updatedAt:Date.now(),updatedBy:me.email})}catch(e){alert("❌ Erro ao atualizar taxa: "+(e.code||e.message));console.error(e)}};window.closeNight=async()=>{try{if(role!=="admin")return alert("Somente administrador");if(confirm("Apagar todos atendimentos e reiniciar sequência?")){await remove(ref(db,"salon"));await update(ref(db,"sequence"),{index:0});alert("✅ Noite encerrada. Contagem zerada.")}}catch(e){alert("❌ Erro ao encerrar noite: "+(e.code||e.message));console.error(e)}};
 function esc(x){return String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-</script></body></html>
+function render(){
+let a=Object.values(state||{}),o=a.filter(x=>x.status!=="finalizada"),d=a.filter(x=>x.status==="finalizada");
+let term=($("searchtable")?.value||"").trim().toLowerCase(),filter=$("filterstatus")?.value||"all";
+let visible=o.filter(x=>(filter==="all"||x.status===filter)&&(!term||String(x.n).toLowerCase().includes(term)||String(x.g).toLowerCase().includes(term)));
+if($("openlabel"))$("openlabel").textContent="("+visible.length+")";if($("donelabel"))$("donelabel").textContent="("+d.length+")";
+$("openct").textContent=o.length;$("donect").textContent=d.length;$("paidct").textContent=a.filter(x=>x.taxPaid).length;
+let counts={};a.forEach(x=>{let name=x.g||"Sem garçom";counts[name]=(counts[name]||0)+1});
+let ranking=Object.entries(counts).sort((x,y)=>y[1]-x[1]);
+$("statstotal").textContent=a.length;
+$("statslist").innerHTML=ranking.map(([name,total],i)=>`<div class="mesa"><b>${i+1}º • ${esc(name)}</b><p class="turn">${total} atendimento${total===1?"":"s"}</p></div>`).join("")||'<p class="muted">Nenhum atendimento registrado nesta noite.</p>';
+let card=m=>`<div class="mesa ${m.status}"><b>Mesa ${esc(m.n)} • ${esc(m.g)}</b><p class="muted">${m.status==="aguardando"?"Pedido não feito":m.status==="andamento"?"Em andamento":"Finalizada"} • Taxa ${m.taxPaid?"paga":"não paga"}</p><p class="muted">Criada por ${esc(m.createdBy||"—")}</p><div class="actions">${m.status!=="finalizada"?`<button style="background:#b91c1c" onclick="change('${m.id}','aguardando')">Pedido não feito</button><button style="background:#2563eb" onclick="change('${m.id}','andamento')">Em andamento</button><button style="background:#15803d" onclick="change('${m.id}','finalizada')">Finalizar</button>`:""}<button class="secondary wide" onclick="toggleTax('${m.id}',${!!m.taxPaid})">${m.taxPaid?"Desmarcar taxa":"Marcar taxa paga"}</button></div></div>`;
+$("openlist").innerHTML=o.map(card).join("")||'<p class="muted">Nenhuma mesa aberta</p>';
+$("donelist").innerHTML=d.map(card).join("")||'<p class="muted">Nenhuma mesa finalizada</p>';
+renderTurn()
+}</script></body></html>
