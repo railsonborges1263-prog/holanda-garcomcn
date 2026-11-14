@@ -1,45 +1,17 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#790b12"><title>Holanda Garçom Online</title>
-<style>
-*{box-sizing:border-box}body{font:16px Arial;margin:0;background:#f1f3f5;color:#222}header{background:#790b12;color:white;padding:18px}main{max-width:760px;margin:auto;padding:12px}.card{background:#fff;padding:15px;border-radius:13px;margin:10px 0;box-shadow:0 2px 6px #0001}h2{font-size:18px;margin:0 0 12px}input,select,button{font:inherit;padding:11px;border-radius:8px;border:1px solid #ddd;width:100%;margin:5px 0}button{background:#790b12;color:#fff;border:0;font-weight:bold}button.secondary{background:#e9e9e9;color:#222}button.blue{background:#2878d0}button.green{background:#16834a}button.red{background:#b3262e}.mesa{border:2px solid #ddd;border-radius:10px;padding:12px;margin:9px 0}.aguardando{background:#fff0f0;border-color:#b3262e}.andamento{background:#edf5ff;border-color:#2878d0}.finalizada{background:#eaf8ef;border-color:#16834a}.actions{display:grid;grid-template-columns:1fr 1fr;gap:6px}.actions button{font-size:12px;padding:9px}.muted{font-size:12px;color:#777}.hidden{display:none}.big{font-size:28px;font-weight:900;color:#790b12;background:#fff1f1;border:3px solid #790b12;border-radius:12px;padding:16px;text-align:center}.stats{display:flex;gap:8px}.stats div{flex:1;text-align:center;background:#eee;padding:10px;border-radius:8px;font-size:12px}.stats b{display:block;font-size:20px}
-</style></head><body><header><h1>🍕 Holanda Garçom Online</h1><div>Salão compartilhado em tempo real</div></header><main>
-<section id="login" class="card"><h2>Entrar</h2><input id="email" type="email" placeholder="E-mail"><input id="pass" type="password" placeholder="Senha"><button onclick="login()">Entrar</button><button class="secondary" onclick="signup()">Criar conta</button><p id="authmsg" class="muted"></p></section>
-<section id="app" class="hidden">
-<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><b id="userlabel"></b><button class="secondary" style="width:auto" onclick="logout()">Sair</button></div><p id="rolelabel" class="muted"></p></div>
-<div class="card"><h2>🎯 GARÇOM DA VEZ</h2><div id="turn" class="big">—</div><div id="adminseq" class="hidden"><label>Escolher quem começa / próxima vez</label><select id="turnselect" onchange="setTurn(this.value)"></select></div></div>
-<div class="card"><h2>Adicionar mesa/atendimento</h2><input id="tableno" placeholder="Número da mesa (pode repetir)"><button onclick="addTable()">＋ Abrir mesa para garçom da vez</button></div>
-<div id="adminpanel" class="card hidden"><h2>Administração</h2><h3>Equipe e permissões</h3><input id="newemail" placeholder="E-mail do funcionário"><select id="newrole"><option value="waiter">Garçom</option><option value="manager">Gerente</option><option value="admin">Administrador</option></select><button onclick="addMember()">Autorizar usuário pelo e-mail</button><p class="muted">O funcionário precisa criar a conta antes. Informe o mesmo e-mail usado no cadastro.</p><h3>Encerrar noite</h3><button class="red" onclick="closeNight()">Encerrar noite e apagar mesas</button></div>
-<div class="card"><h2>Resumo do salão</h2><div class="stats"><div>Em aberto<b id="openct">0</b></div><div>Finalizadas<b id="donect">0</b></div><div>Taxas pagas<b id="paidct">0</b></div></div></div>
-<div class="card"><h2>Mesas abertas</h2><div id="openlist"></div></div><div class="card"><h2>Finalizadas</h2><div id="donelist"></div></div>
-</section></main>
-<script type="module">
-import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {getDatabase,ref,onValue,set,update,push,remove} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-const cfg={"apiKey": "AIzaSyCIVBLszTdPSg-FZxT8ynJQRebRrjLl6lc", "authDomain": "holanda-garcom.firebaseapp.com", "databaseURL": "https://holanda-garcom-default-rtdb.firebaseio.com", "projectId": "holanda-garcom", "storageBucket": "holanda-garcom.firebasestorage.app", "messagingSenderId": "118990362111", "appId": "1:118990362111:web:f16bcf4d3214971a1743ca", "measurementId": "G-3F16YC9GSY"};
-const app=initializeApp(cfg),auth=getAuth(app),db=getDatabase(app);
-let me=null,role="waiter",members={},state={},seq=[],turnIndex=0,offFns=[];
-const $=id=>document.getElementById(id),msg=t=>$("authmsg").textContent=t;
-window.login=()=>signInWithEmailAndPassword(auth,$("email").value.trim(),$("pass").value).catch(e=>msg(e.message));
-window.signup=()=>createUserWithEmailAndPassword(auth,$("email").value.trim(),$("pass").value).then(()=>msg("Conta criada. Peça ao administrador para autorizar seu acesso.")).catch(e=>msg(e.message));
-window.logout=()=>signOut(auth);
-onAuthStateChanged(auth,u=>{me=u;if(!u){$("login").classList.remove("hidden");$("app").classList.add("hidden");return}
-$("login").classList.add("hidden");$("app").classList.remove("hidden");$("userlabel").textContent=u.email;
-onValue(ref(db,"members/"+u.uid),snap=>{let m=snap.val();role=m?.role||"waiter";$("rolelabel").textContent=m?("Perfil: "+role):"Acesso ainda não autorizado. Admin deve cadastrar seu e-mail.";$("adminpanel").classList.toggle("hidden",role!=="admin");$("adminseq").classList.toggle("hidden",role!=="admin");});
-onValue(ref(db,"members"),s=>{members=s.val()||{};});
-onValue(ref(db,"salon"),s=>{state=s.val()||{};render();});
-onValue(ref(db,"sequence"),s=>{let v=s.val()||{};seq=v.names||[];turnIndex=v.index||0;renderTurn();});
+onValue(ref(db,"members/"+u.uid),snap=>{
+  const m=snap.val();
+
+  role=(m?.role||"").toLowerCase();
+
+  const ok=["admin","manager","waiter"].includes(role);
+
+  $("rolelabel").textContent=ok
+    ? "Perfil: "+role
+    : "Acesso ainda não autorizado.";
+
+  $("adminpanel").classList.toggle("hidden",role!=="admin");
+  $("adminseq").classList.toggle("hidden",role!=="admin");
+
+  $("app").classList.toggle("hidden",!ok);
+  $("login").classList.toggle("hidden",!!ok);
 });
-function authorized(){return !!me&&!!members[me.uid]}
-function renderTurn(){let current=seq.length?seq[turnIndex%seq.length]:"Defina a sequência";$("turn").textContent=current;$("turnselect").innerHTML=seq.map(n=>`<option ${n===current?"selected":""}>${n}</option>`).join("")}
-window.setTurn=async n=>{if(role!=="admin")return;let i=seq.indexOf(n);await update(ref(db,"sequence"),{index:Math.max(i,0)})};
-window.addMember=async()=>{if(role!=="admin")return;let email=$("newemail").value.trim().toLowerCase(),r=$("newrole").value;let entry=Object.entries(members).find(([uid,m])=>m.email?.toLowerCase()===email);if(!entry)return alert("Esse usuário ainda não criou conta. Peça para ele se cadastrar primeiro.");await set(ref(db,"members/"+entry[0]),{email,role:r});alert("Perfil atualizado.")};
-window.addTable=async()=>{if(!authorized())return alert("Seu acesso ainda não foi autorizado.");let n=$("tableno").value.trim();if(!n)return alert("Informe a mesa.");if(!seq.length)return alert("Admin precisa definir sequência de garçons.");
-let g=seq[turnIndex%seq.length],id=push(ref(db,"salon")).key;await set(ref(db,"salon/"+id),{id,n,g,status:"aguardando",taxPaid:false,createdAt:Date.now(),createdBy:me.email});
-await update(ref(db,"sequence"),{index:(turnIndex+1)%seq.length});$("tableno").value=""};
-window.change=async(id,status)=>{if(!authorized())return;await update(ref(db,"salon/"+id),{status,updatedAt:Date.now(),updatedBy:me.email})};
-window.toggleTax=async(id,v)=>{if(!authorized())return;await update(ref(db,"salon/"+id),{taxPaid:!v,updatedAt:Date.now(),updatedBy:me.email})};
-window.closeNight=async()=>{if(role!=="admin")return alert("Somente administrador.");if(!confirm("Encerrar a noite e apagar todas as mesas para todos?"))return;await remove(ref(db,"salon"));await update(ref(db,"sequence"),{index:0});alert("Noite encerrada.")};
-function render(){let arr=Object.values(state||{}),open=arr.filter(x=>x.status!=="finalizada"),done=arr.filter(x=>x.status==="finalizada");$("openct").textContent=open.length;$("donect").textContent=done.length;$("paidct").textContent=arr.filter(x=>x.taxPaid).length;
-let card=m=>`<div class="mesa ${m.status}"><b>Mesa ${m.n} • ${m.g}</b><p class="muted">${m.status==="aguardando"?"Pedido não feito":m.status==="andamento"?"Em andamento":"Finalizada"} • Taxa ${m.taxPaid?"paga":"não paga"}</p><p class="muted">Criada por ${m.createdBy||"—"}</p><div class="actions">${m.status!=="finalizada"?`<button class="red" onclick="change('${m.id}','aguardando')">Pedido não feito</button><button class="blue" onclick="change('${m.id}','andamento')">Em andamento</button><button class="green" onclick="change('${m.id}','finalizada')">Finalizar</button>`:""}<button class="secondary" onclick="toggleTax('${m.id}',${!!m.taxPaid})">${m.taxPaid?"Desmarcar taxa":"Marcar taxa paga"}</button></div></div>`;
-$("openlist").innerHTML=open.map(card).join("")||'<p class="muted">Nenhuma mesa aberta.</p>';$("donelist").innerHTML=done.map(card).join("")||'<p class="muted">Nenhuma mesa finalizada.</p>';renderTurn()}
-</script></body></html>
